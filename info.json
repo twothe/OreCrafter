@@ -1,0 +1,10 @@
+{
+	"name": "orecrafter",
+	"version": "1.1.1",
+	"title": "OreCrafter",
+	"author": "PyroFire > TwoThe",
+	"dependencies": ["base >= 1.1"],
+	"description": "Craft ores in Assemblers for Space-/SeaBlock",
+	"factorio_version": "1.1",
+	"homepage":"https://www.patreon.com/pyrofire"
+}
