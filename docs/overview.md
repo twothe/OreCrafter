@@ -25,6 +25,7 @@ OreCrafter dynamically creates duplication recipes for resources, fluids, and se
 - Planet restriction can limit duplication recipes to planets where the resource naturally occurs.
 - Missing planet mappings or surface properties stop loading with a clear error when restrictions are enabled.
 - When planet restriction is enabled, duplication recipes append the planet label to the recipe name (for example, “Coal (Nauvis)”).
+- Optional removal can strip natural resource entities (ores, rocks, trees, plants) from planet map generation while keeping tile fluids.
 - Bootstrap recipes unlock when a player first arrives on the planet.
 
 ## Configuration

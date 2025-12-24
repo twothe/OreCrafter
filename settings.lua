@@ -32,6 +32,9 @@ data:extend(
 	{type="bool-setting",name="orecrafter_restrict_planet_resources",order="23e",
 	setting_type="startup",default_value=true},
 
+	{type="bool-setting",name="orecrafter_remove_natural_sources",order="23f",
+	setting_type="startup",default_value=true},
+
 	{type="bool-setting",name="orecrafter_fusiongenerator_craftable",order="24a",
 	setting_type="startup",default_value=false},
 

@@ -141,6 +141,7 @@ local function GetStartupNumber(name)
 end
 
 orecrafter.restrict_planet_resources=GetStartupBool("orecrafter_restrict_planet_resources",true)
+orecrafter.remove_natural_sources=GetStartupBool("orecrafter_remove_natural_sources",true)
 orecrafter.planet_conditions={}
 orecrafter.planet_resource_map={}
 orecrafter.planet_tile_fluid_map={}
@@ -254,6 +255,51 @@ function orecrafter.BuildPlanetTileFluidMap()
 	return planet_tile_fluid_map
 end
 
+function orecrafter.RemoveNaturalSources()
+	if(not orecrafter.remove_natural_sources)then return end
+	local rock_entities={}
+	for _,pool in pairs({data.raw["simple-entity"],data.raw["simple-entity-with-owner"]})do
+		for name,entity in pairs(pool or {})do
+			if(entity.count_as_rock_for_filtered_deconstruction and entity.minable)then
+				rock_entities[name]=true
+			end
+		end
+	end
+	local controls_to_remove={trees=true,rocks=true}
+	for _,tree in pairs(data.raw.tree or {})do
+		local control=tree.autoplace and tree.autoplace.control
+		if(control)then controls_to_remove[control]=true end
+	end
+	for _,plant in pairs(data.raw.plant or {})do
+		local control=plant.autoplace and plant.autoplace.control
+		if(control)then controls_to_remove[control]=true end
+	end
+	for name in pairs(rock_entities)do
+		local entity=(data.raw["simple-entity"] and data.raw["simple-entity"][name]) or (data.raw["simple-entity-with-owner"] and data.raw["simple-entity-with-owner"][name])
+		local control=entity and entity.autoplace and entity.autoplace.control
+		if(control)then controls_to_remove[control]=true end
+	end
+	for _,planet in pairs(data.raw.planet or {})do
+		local map_settings=planet.map_gen_settings
+		if(map_settings)then
+			local controls=map_settings.autoplace_controls
+			if(controls)then
+				for control_name in pairs(controls_to_remove)do
+					controls[control_name]=nil
+				end
+			end
+			local entities=map_settings.autoplace_settings and map_settings.autoplace_settings.entity and map_settings.autoplace_settings.entity.settings
+			if(entities)then
+				for entity_name in pairs(entities)do
+					if(data.raw.resource[entity_name] or data.raw.tree[entity_name] or data.raw.plant[entity_name] or rock_entities[entity_name])then
+						entities[entity_name]=nil
+					end
+				end
+			end
+		end
+	end
+end
+
 function orecrafter.PlanetListFor(map,key)
 	local planets=map and map[key]
 	if(not planets)then return nil end
@@ -363,6 +409,7 @@ orecrafter.planet_resource_map=orecrafter.BuildPlanetResourceMap()
 orecrafter.planet_entity_map=orecrafter.BuildPlanetEntityMap()
 orecrafter.planet_control_map=orecrafter.BuildPlanetAutoplaceControlMap()
 orecrafter.planet_tile_fluid_map=orecrafter.BuildPlanetTileFluidMap()
+orecrafter.RemoveNaturalSources()
 orecrafter.output_tech_depth=orecrafter.BuildOutputTechDepthMap()
 function orecrafter.PlanetLabel(planet_name)
 	local planet=data.raw.planet and data.raw.planet[planet_name]
@@ -413,7 +460,8 @@ end
 orecrafter.ApplyFusionGeneratorSurfaceConditions()
 
 function orecrafter.RecipeFromResource(e)
-	if(not proto.IsAutoplaceControl(e) or not e.minable)then return end
+	if(not e.minable)then return end
+	if(not proto.IsAutoplaceControl(e) and not (orecrafter.planet_resource_map and orecrafter.planet_resource_map[e.name]))then return end
 	local rz=proto.Results(e.minable)
 	if(not rz or not rz[1])then return end
 	local primary=orecrafter.SelectPrimaryResult(rz,e.name)

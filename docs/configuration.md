@@ -12,6 +12,7 @@ All settings are startup settings.
 ## Planet Restrictions
 - `orecrafter_restrict_planet_resources` (default true): only allow duplication on planets where the resource naturally occurs.
 - `orecrafter_allow_water_duplication` (default true): allow or disable water duplication.
+- `orecrafter_remove_natural_sources` (default true): remove naturally generated ore/resources, rocks, trees, and plant sources from planets (tile fluids such as water remain).
 
 ## Fusion Generator
 - `orecrafter_fusiongenerator_craftable` (default false): enable or disable the fusion generator technology/recipe.
