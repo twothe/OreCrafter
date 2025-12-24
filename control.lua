@@ -5,6 +5,18 @@ orecrafter.initial_size={8,8}
 
 local itemsToRemove = { "mining-drill", "furnace" }
 
+local function ItemPrototype(name)
+	if(prototypes and prototypes.item)then return prototypes.item[name] end
+	if(game and game.item_prototypes)then return game.item_prototypes[name] end
+	return nil
+end
+
+local function EntityPrototype(name)
+	if(prototypes and prototypes.entity)then return prototypes.entity[name] end
+	if(game and game.entity_prototypes)then return game.entity_prototypes[name] end
+	return nil
+end
+
 local function PlanetNameFromSurface(surface)
 	if(surface and surface.planet and surface.planet.name)then return surface.planet.name end
 	return surface and surface.name or nil
@@ -52,9 +64,10 @@ local function StarterInventory(ev)
 	if(not inv)then return end
 
 	for k,v in pairs(inv.get_contents())do
-		local item=game.item_prototypes[k]
+		local item=ItemPrototype(k)
 		local ent
-		if(item)then ent=game.entity_prototypes[item.name] end
+		local place_name=item and (item.place_result or item.name)
+		if(place_name)then ent=EntityPrototype(place_name) end
 		if(ent and table.HasValue(itemsToRemove,ent.type))then --ent.type=="mining-drill")then
 			inv.remove{name=k,count=v}
 		end

@@ -39,17 +39,7 @@ Use https://tools.stefankueng.com/grepWin.html to mass search, find and replace 
 
 ]]---------------------------------------
 
+--- Provides a reserved module for optional control-stage helpers without legacy baggage.
+local logic={}
 
-
---[[ Unused
-
-
-function warptorio.GetFastestLoader() -- currently unused
-	if(warptorio.FastestLoader)then return warptorio.FastestLoader end if(true)then return "express-loader" end
-	local ld={} local topspeed=game.entity_prototypes["express-loader"].belt_speed local top="express-loader"
-	for k,v in pairs(game.entity_prototypes)do if(v.type=="loader")then table.insert(ld,v) end end
-	for k,v in pairs(ld)do if(not v.name:match("warptorio") and not v.name:match("mini") and v.belt_speed>=topspeed)then topspeed=v.belt_speed top=v.name end end
-	warptorio.FastestLoader=top return top
-end
-
-]]
+return logic

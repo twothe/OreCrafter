@@ -35,46 +35,7 @@ local fusionGen = {
 	max_health = 150,
 	minable = {	mining_time = 0.5, result = name },
 	name = name,
-	picture = {
-		layers = {
-			{
-				animation_speed = 0.5,
-				filename = "__base__/graphics/entity/accumulator/accumulator.png",
-				tint = tint,
-				height = 94,
-				hr_version = {
-					animation_speed = 0.5,
-					filename = "__base__/graphics/entity/accumulator/hr-accumulator.png",
-					tint = tint,
-					height = 189,
-					priority = "high",
-					scale = 0.5,
-					shift = { 0, -0.34375 },
-					width = 130
-				},
-				priority = "high",
-				shift = { 0, -0.3125 },
-				width = 66
-			},
-			{
-				draw_as_shadow = true,
-				filename = "__base__/graphics/entity/accumulator/accumulator-shadow.png",
-				height = 54,
-				hr_version = {
-					draw_as_shadow = true,
-					filename = "__base__/graphics/entity/accumulator/hr-accumulator-shadow.png",
-					height = 106,
-					priority = "high",
-					scale = 0.5,
-					shift = {	0.90625, 0.1875	},
-					width = 234
-				},
-				priority = "high",
-				shift = { 0.875, 0.1875 },
-				width = 120
-			}
-		}
-	},
+	picture = accumulator_picture(tint),
 	selection_box = { {-1, -1}, {1, 1} },
 	vehicle_impact_sound = {
 		{	filename = "__base__/sound/car-metal-impact-2.ogg",	volume = 0.5 },
@@ -83,20 +44,7 @@ local fusionGen = {
 		{	filename = "__base__/sound/car-metal-impact-5.ogg",	volume = 0.5 },
 		{	filename = "__base__/sound/car-metal-impact-6.ogg",	volume = 0.5 }
 	},
-	water_reflection = {
-		orientation_to_variation = false,
-		pictures = {
-			filename = "__base__/graphics/entity/accumulator/accumulator-reflection.png",
-			tint = tint,
-			height = 24,
-			priority = "extra-high",
-			scale = 5,
-			shift = { 0, 1.5625 },
-			variation_count = 1,
-			width = 20
-		},
-		rotate = false
-	},
+	water_reflection = accumulator_reflection(),
 }
 
 local fusionGenItem = {
@@ -116,10 +64,10 @@ local fusionGenRecipe={
 	enabled = false,
 	energy_required = 30,
 	ingredients = {
-		{ "steel-plate", 20 },
-		{ "fusion-reactor-equipment", 2 },
-		{ "accumulator", 1 },
-		{ "copper-cable", 4 },
+		{ type = "item", name = "steel-plate", amount = 20 },
+		{ type = "item", name = "fusion-reactor-equipment", amount = 2 },
+		{ type = "item", name = "accumulator", amount = 1 },
+		{ type = "item", name = "copper-cable", amount = 4 },
 	},
 	name = name,
 	results = {

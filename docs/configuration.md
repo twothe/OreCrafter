@@ -9,9 +9,9 @@ All settings are startup settings.
 - `orecrafter_fluid_needed` (default 125): fluid input per duplication.
 - `orecrafter_fluid_count` (default 40): extra fluid produced per duplication.
 
-## Planet Restrictions
-- `orecrafter_restrict_planet_resources` (default true): only allow duplication on planets where the resource naturally occurs.
+## Planet & Worldgen
 - `orecrafter_allow_water_duplication` (default true): allow or disable water duplication.
+- `orecrafter_restrict_planet_resources` (default true): only allow duplication on planets where the resource naturally occurs.
 - `orecrafter_remove_natural_sources` (default true): remove naturally generated ore/resources, rocks, trees, and plant sources from planets (tile fluids such as water remain).
 
 ## Fusion Generator

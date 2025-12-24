@@ -430,6 +430,17 @@ function orecrafter.PlanetRecipeName(base_recipe,planet_name)
 	return {"", base_name, " (", label, ")"}
 end
 
+-- Returns the list of planets where an entity can naturally spawn based on map-gen controls and settings.
+function orecrafter.PlanetsForEntity(entity)
+	if(not entity)then return nil end
+	local control=entity.autoplace and entity.autoplace.control
+	local planets=control and orecrafter.PlanetListFor(orecrafter.planet_control_map,control)
+	planets=planets or orecrafter.PlanetListFor(orecrafter.planet_control_map,entity.name)
+	planets=planets or orecrafter.PlanetListFor(orecrafter.planet_control_map,entity.type)
+	planets=planets or (orecrafter.planet_entity_map and orecrafter.PlanetListFor(orecrafter.planet_entity_map,entity.name))
+	return planets
+end
+
 function orecrafter.PlanetListMissing(planet_map,covered_map)
 	if(not planet_map)then return nil end
 	local list={}
@@ -500,11 +511,7 @@ end
 
 function orecrafter.RecipeFromTree(e,rsid)
 	if(not e.minable)then return end
-	local control=e.autoplace and e.autoplace.control
-	local planets=control and orecrafter.PlanetListFor(orecrafter.planet_control_map,control)
-	planets=planets or orecrafter.PlanetListFor(orecrafter.planet_control_map,e.name)
-	planets=planets or orecrafter.PlanetListFor(orecrafter.planet_control_map,e.type)
-	planets=planets or orecrafter.PlanetListFor(orecrafter.planet_entity_map,e.name)
+	local planets=orecrafter.PlanetsForEntity(e)
 	if(not planets and not proto.IsAutoplaceControl(e))then return end
 	if(not planets and orecrafter.restrict_planet_resources)then return end
 	local min=proto.Results(e.minable)
@@ -599,8 +606,7 @@ function orecrafter.BuildOutputPlanetMap()
 		end
 	end
 	for plant_name,plant in pairs(data.raw.plant or {})do
-		local control=plant.autoplace and plant.autoplace.control
-		local planets=control and orecrafter.planet_control_map[control]
+		local planets=orecrafter.PlanetsForEntity(plant)
 		local minable=plant.minable
 		if(planets and minable)then
 			local rz=proto.Results(minable)
@@ -614,9 +620,7 @@ function orecrafter.BuildOutputPlanetMap()
 		end
 	end
 	for tree_name,tree in pairs(data.raw.tree or {})do
-		local control=tree.autoplace and tree.autoplace.control
-		local planets=(control and orecrafter.planet_control_map[control]) or orecrafter.planet_control_map[tree_name] or orecrafter.planet_control_map[tree.type]
-		planets=planets or (orecrafter.planet_entity_map and orecrafter.planet_entity_map[tree_name])
+		local planets=orecrafter.PlanetsForEntity(tree)
 		local minable=tree.minable
 		if(planets and minable)then
 			local rz=proto.Results(minable)

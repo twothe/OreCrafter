@@ -5,12 +5,14 @@ OreCrafter dynamically creates duplication recipes for resources, fluids, and se
 - `data.lua` defines the item-group and subgroups used to categorize the duplication recipes.
 - `data-final-fixes.lua`:
 	- Boots the shared `lib` framework with data-stage logic enabled.
-- Scans resources and trees, using autoplace controls or planet map-gen entity entries plus `minable` definitions to detect valid ore sources.
-- Scans rock-like simple entities that are part of planet map generation (counted as rocks for deconstruction) to capture additional ground-stone outputs.
-- Generates per-resource recipes that consume some amount of the resource to output more of the same resource, selecting the earliest-tech output when multiple results exist.
+	- Scans resources and trees, using autoplace controls or planet map-gen entity entries plus `minable` definitions to detect valid sources.
+	- Scans rock-like simple entities that are part of planet map generation (counted as rocks for deconstruction) to capture additional ground-stone outputs.
 	- Scans planet map-gen settings to map which resources, plants, and tile fluids naturally occur on each planet.
+	- Generates per-resource recipes that consume some amount of the resource to output more of the same resource, selecting the earliest-tech output when multiple results exist.
 	- Scans Gleba plant prototypes to add duplication recipes for yumako and jellynut, crafted only in biochambers.
 	- Adds optional `surface_conditions` to duplication recipes so they can only be crafted on planets where the resource naturally occurs.
+	- Appends planet labels to planet-restricted recipe names (for example, “Coal (Nauvis)”).
+	- Optionally removes natural resource entities (ores, rocks, trees, plants) from planet map generation while keeping tile fluids.
 	- Builds planet bootstrap recipes that yield low-probability outputs for resources occurring on each planet and unlock on first arrival.
 
 ## Control Stage Flow

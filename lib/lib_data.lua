@@ -150,7 +150,14 @@ function proto.FetchDifficultyLayer(tx,seek)
 end
 
 function proto.Result(t) if(t[1] and t[2])then return {type="item",name=t[1],amount=t[2]} else return t end end
-function proto.Results(tx) local t,dfc=proto.FetchDifficultyLayer(tx,{"result","results"}) if(t)then if(t.results)then rs=t.results else rs={{t.result,t.result_count or 1}} end end return rs,dfc end
+function proto.Results(tx)
+	local rs
+	local t,dfc=proto.FetchDifficultyLayer(tx,{"result","results"})
+	if(t)then
+		if(t.results)then rs=t.results else rs={{t.result,t.result_count or 1}} end
+	end
+	return rs,dfc
+end
 function proto.Ingredient(t) return proto.Result(t) end
 function proto.Ingredients(tx) local t,dfc=proto.FetchDifficultyLayer(tx,{"ingredients"}) return (t and t.ingredients),dfc end
 
@@ -165,8 +172,19 @@ end
 function proto.LoopTech(n,p) p=p or {} p[n]=true local r=data.raw.technology[n] for k,v in pairs(r.prerequisites or {})do if(not p[v])then proto.LoopTech(v,p) end end return p end
 function proto.RecursiveTechBottles(g) local t={} for n in pairs(proto.LoopTech(g.name))do local c,u=data.raw.technology[n] u=proto.TechBottles(c) for k,v in pairs(u)do t[v]=true end end return t end
 
-function proto.TechEffects(g) local t={recipes={},items={},c=0} if(not g.effects)then return t end
-	for k,v in pairs(g.effects)do local x=v.type if(x=="unlock-recipe")then table.insert(t.recipes,v.recipe) t.c=t.c+1 elseif(x=="give-item")then table.insert(x.items,v.item) t.c=t.c+1 end end
+function proto.TechEffects(g)
+	local t={recipes={},items={},c=0}
+	if(not g.effects)then return t end
+	for k,v in pairs(g.effects)do
+		local x=v.type
+		if(x=="unlock-recipe")then
+			table.insert(t.recipes,v.recipe)
+			t.c=t.c+1
+		elseif(x=="give-item")then
+			table.insert(t.items,v.item)
+			t.c=t.c+1
+		end
+	end
 	return t
 end
 

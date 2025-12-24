@@ -288,7 +288,7 @@ end
 function logic.CanCraftRecipe(c) return hand.craft_cats[c.category or "crafting"] end -- Return automation level. 0=handcraft. 1=automated.
 function logic.ScanRecipe(c,bscan) if(hand.recipescan[c.name])then return true end
 	if(logic.ShouldIgnore(c.name))then hand.recipescan[c.name]=true return true end
-	for k,v in pairs(proto.Results(c))do local x=proto.Result(v) logic.PushResult(x,hand.craft_cats[v.category or "crafting"] or 0,bscan) end
+	for k,v in pairs(proto.Results(c) or {})do local x=proto.Result(v) logic.PushResult(x,hand.craft_cats[v.category or "crafting"] or 0,bscan) end
 	hand.recipescan[c.name]=true
 	return true
 end

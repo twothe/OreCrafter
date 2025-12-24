@@ -20,6 +20,9 @@
 - Fusion generator: default buildable only on Nauvis; when the “any surface” option is enabled it can be placed on all surfaces (including space platforms).
 - Fusion generator: technology/recipe only exists when the tech option is enabled.
 - Quality: data-updates recycling pass loads without errors; fusion generator recipe uses explicit results.
+- Fusion generator: recipe ingredients use typed dictionaries (Factorio 2.0 format).
 - Tech scan: technologies without science pack ingredients are treated as free and do not error.
+- Logic: recipes without results (parameter recipes) do not crash the scan.
+- Control: single-player cutscene skip uses runtime prototypes table without accessing removed game.*_prototypes.
 - Control: on_init initializes `global` storage even if the environment starts without it.
 - Water duplication: can be disabled via setting; when disabled no water duplication recipe is generated.
