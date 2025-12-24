@@ -118,11 +118,13 @@ function cache.player(tbl) cache.players=tbl end
 cache.events={} -- Functions to distribute individual events among the caches in correct orders
 
 function cache.init()
+	if(not global)then global={} end
 	global._lib=global._lib or {}
 	cache.migrate()
 end
 
 function cache.migrate(ev)
+	if(not global)then global={} end
 	if(global._libcache)then global._lib={cache=global._libcache} global._libcache=nil else global._lib=global._lib or {cache={}} end -- global._lib.cache
 	global._lib.cache=global._lib.cache or {}
 	for key,category in pairs(cache.primaries)do -- global._lib[raised_type]

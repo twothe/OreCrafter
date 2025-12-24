@@ -159,7 +159,7 @@ function proto.CraftingObject(rs) local raw=proto.RawItem(rs.name) return raw or
 function proto.ResultObject(t) local rs=proto.Result(t) return proto.CraftingObject(rs) end
 function proto.IngredientObject(t) local rs=proto.Ingredient(t) return proto.CraftingObject(rs) end
 
-function proto.TechBottles(tz) local t,dfc=proto.FetchDifficultyLayer(tz,{"unit"}) if(not t or not t.unit or not t.unit.ingredients)then return end
+function proto.TechBottles(tz) local t,dfc=proto.FetchDifficultyLayer(tz,{"unit"}) if(not t or not t.unit or not t.unit.ingredients)then return {} end
 	local tx={} for k,v in pairs(t.unit.ingredients)do local rs=proto.Ingredient(v) tx[rs.name]=rs.name end return tx
 end
 function proto.LoopTech(n,p) p=p or {} p[n]=true local r=data.raw.technology[n] for k,v in pairs(r.prerequisites or {})do if(not p[v])then proto.LoopTech(v,p) end end return p end
@@ -200,7 +200,10 @@ function proto.Copy(a,b,x) local t=table.deepcopy(data.raw[a][b]) if(x)then tabl
 
 function proto.ExtendBlankEntityItems(ent)
 	local rcp=proto.Copy("recipe","nuclear-reactor")
-	rcp.enabled=false rcp.name=ent.name rcp.ingredients={{"steel-plate",1}} rcp.result=ent.name
+	rcp.enabled=false
+	rcp.name=ent.name
+	rcp.ingredients={{type="item",name="steel-plate",amount=1}}
+	rcp.results={{type="item",name=ent.name,amount=1}}
 
 	local item=proto.Copy("item","nuclear-reactor")
 	item.name=ent.name item.place_result=ent.name

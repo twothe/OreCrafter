@@ -1,0 +1,24 @@
+# OreCrafter Testcases
+- Base game: duplication recipes generated for all basic resources and trees; bootstrap recipe contains all detected results.
+- Fluids: resource fluids (oil-like) create `oil-processing` recipes with temperature preserved.
+- Required fluids: resource requiring a fluid (e.g., acid mining) generates chemistry recipes with required fluid ingredient.
+- Multi-output resources: select the result tied to the earliest technology (falling back to the first result when depth is equal).
+- Tree drops: each tree drop results in a tree subgroup duplication recipe.
+- Space Age: planet-exclusive resources are only craftable on their owning planet when the restriction option is enabled; they are global when disabled.
+- Space Age: mixed world with multiple planets and platform surfaces maintains correct availability per surface.
+- Space Age: tile-based fluids (heavy oil, lava, ammoniacal solution) generate duplication recipes and are only craftable on planets where the tiles appear.
+- Space Age: planet bootstrap recipes unlock on first arrival and only include resources that occur on that planet.
+- Space Age: when restrictions are disabled, planet bootstrap recipes still unlock on first arrival but can be crafted anywhere.
+- Space Age: planet bootstrap recipes skip fluid outputs without a barrel item to avoid invalid results.
+- Space Age: planet-restricted duplication recipes show the planet label in their localised name.
+- Space Age: rock entities with minable item drops generate duplication recipes on their owning planets (for example, Vulcanus rocks yielding iron/copper/tungsten, Gleba bacterial stones yielding iron/copper).
+- Space Age: rock-like entities without planet map generation entries (e.g., enemy shells) are ignored to avoid invalid planet mapping errors.
+- Space Age: tree entities with planet map generation entries generate duplication recipes (for example, Vulcanus ashland lichen trees yield carbon).
+- Space Age: Gleba fruits (yumako, jellynut) have duplication recipes in the organic category and are only craftable in biochambers.
+- Space Age: when planet restriction is enabled and a resource/plant/fluid lacks planet mapping or surface properties, the mod errors with a clear message.
+- Fusion generator: default buildable only on Nauvis; when the “any surface” option is enabled it can be placed on all surfaces (including space platforms).
+- Fusion generator: technology/recipe only exists when the tech option is enabled.
+- Quality: data-updates recycling pass loads without errors; fusion generator recipe uses explicit results.
+- Tech scan: technologies without science pack ingredients are treated as free and do not error.
+- Control: on_init initializes `global` storage even if the environment starts without it.
+- Water duplication: can be disabled via setting; when disabled no water duplication recipe is generated.

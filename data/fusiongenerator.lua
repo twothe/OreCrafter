@@ -113,17 +113,19 @@ local fusionGenItem = {
 }
 
 local fusionGenRecipe={
-  enabled = false,
-  energy_required = 30,
-  ingredients = {
+	enabled = false,
+	energy_required = 30,
+	ingredients = {
 		{ "steel-plate", 20 },
 		{ "fusion-reactor-equipment", 2 },
 		{ "accumulator", 1 },
 		{ "copper-cable", 4 },
 	},
-  name = name,
-  result = name,
-  type = "recipe"
+	name = name,
+	results = {
+		{ type = "item", name = name, amount = 1 },
+	},
+	type = "recipe"
 }
 
 local fusionGenTech = {

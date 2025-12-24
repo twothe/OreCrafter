@@ -1,4 +1,12 @@
 ---------------------------------------------------------------------------------------------------
+Version: 2.0.0
+Date: 23.12.2025
+  Changes:
+    - Updated for Factorio 2.0 / Space Age planets
+    - Added planet-based resource restriction option (default on)
+    - Added duplication support for naturally occurring tile fluids (e.g., heavy oil)
+
+---------------------------------------------------------------------------------------------------
 Version: 1.1.1
 Date: 02.01.2023
   Changes:

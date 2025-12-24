@@ -10,6 +10,7 @@ data:extend{ -- Crafting menu categories
 	{name="orecrafter-dupe-raw",type="item-subgroup",group="orecrafter-duplications",order="b"},
 	{name="orecrafter-dupe-oil",type="item-subgroup",group="orecrafter-duplications",order="c"},
 	{name="orecrafter-dupe-chem",type="item-subgroup",group="orecrafter-duplications",order="d"},
+	{name="orecrafter-dupe-organic",type="item-subgroup",group="orecrafter-duplications",order="e"},
 }
 
 -- Infinite energy source to start the game
