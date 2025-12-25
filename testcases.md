@@ -10,6 +10,8 @@
 - Space Age: planet bootstrap recipes unlock on first arrival and only include resources that occur on that planet.
 - Space Age: when restrictions are disabled, planet bootstrap recipes still unlock on first arrival but can be crafted anywhere.
 - Space Age: planet bootstrap recipes skip fluid outputs without a barrel item to avoid invalid results.
+- Space Age: Nauvis bootstrap includes wood from tree outputs.
+- Space Age: Nauvis bootstrap excludes planet-specific tree outputs (e.g., carbon from Vulcanus trees).
 - Space Age: planet-restricted duplication recipes show the planet label in their localised name.
 - Space Age: rock entities with minable item drops generate duplication recipes on their owning planets (for example, Vulcanus rocks yielding iron/copper/tungsten, Gleba bacterial stones yielding iron/copper).
 - Space Age: rock-like entities without planet map generation entries (e.g., enemy shells) are ignored to avoid invalid planet mapping errors.
@@ -25,4 +27,5 @@
 - Logic: recipes without results (parameter recipes) do not crash the scan.
 - Control: single-player cutscene skip uses runtime prototypes table without accessing removed game.*_prototypes.
 - Control: on_init initializes `global` storage even if the environment starts without it.
+- Control: multiplayer join on `on_player_created` initializes `global` before accessing mod state.
 - Water duplication: can be disabled via setting; when disabled no water duplication recipe is generated.

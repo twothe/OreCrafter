@@ -440,18 +440,12 @@ end
 function orecrafter.PlanetsForEntity(entity)
 	if(not entity)then return nil end
 	local control=entity.autoplace and entity.autoplace.control
-	if(entity.type=="tree")then
-		local planets=orecrafter.planet_entity_map and orecrafter.PlanetListFor(orecrafter.planet_entity_map,entity.name)
-		if(not planets and control and control~="trees")then
-			planets=orecrafter.PlanetListFor(orecrafter.planet_control_map,control)
-		end
-		planets=planets or orecrafter.PlanetListFor(orecrafter.planet_control_map,entity.name)
-		planets=planets or orecrafter.PlanetListFor(orecrafter.planet_control_map,entity.type)
-		return planets
-	end
 	local planets=control and orecrafter.PlanetListFor(orecrafter.planet_control_map,control)
 	planets=planets or orecrafter.PlanetListFor(orecrafter.planet_control_map,entity.name)
 	planets=planets or orecrafter.PlanetListFor(orecrafter.planet_control_map,entity.type)
+	if((not planets) and entity.type=="tree")then
+		planets=orecrafter.PlanetListFor(orecrafter.planet_control_map,"trees")
+	end
 	planets=planets or (orecrafter.planet_entity_map and orecrafter.PlanetListFor(orecrafter.planet_entity_map,entity.name))
 	return planets
 end

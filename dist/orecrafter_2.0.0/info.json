@@ -1,0 +1,9 @@
+{
+	"name": "orecrafter",
+	"version": "2.0.0",
+	"title": "OreCrafter",
+	"author": "TwoThe",
+	"dependencies": ["base >= 2.0"],
+	"description": "Craft ores in Assemblers for Space-/SeaBlock",
+	"factorio_version": "2.0"
+}
