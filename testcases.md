@@ -9,7 +9,12 @@
 - Space Age: tile-based fluids (heavy oil, lava, ammoniacal solution) generate duplication recipes and are only craftable on planets where the tiles appear.
 - Space Age: planet bootstrap recipes unlock on first arrival and only include resources that occur on that planet.
 - Space Age: when restrictions are disabled, planet bootstrap recipes still unlock on first arrival but can be crafted anywhere.
-- Space Age: planet bootstrap recipes skip fluid outputs without a barrel item to avoid invalid results.
+- Space Age: planet bootstrap recipes only include item outputs (no fluids).
+- Space Age: each natural planet fluid gets a dedicated bootstrap recipe that outputs fluid directly with no inputs and uses the configured fluid crafting time.
+- Space Age: bootstrap fluid recipes output 5% (rounded up) of the configured fluid generation amount.
+- UI: bootstrap item recipes appear in the first recipe row, sorted by name.
+- UI: per-planet recipe rows list items then fluids, and within each row bootstrap variants appear before generator variants for the same name.
+- Progression: planet-specific recipes are disabled until the player enters that planet, even when planet restriction is disabled.
 - Space Age: Nauvis bootstrap includes wood from tree outputs.
 - Space Age: Nauvis bootstrap excludes planet-specific tree outputs (e.g., carbon from Vulcanus trees).
 - Space Age: planet-restricted duplication recipes show the planet label in their localised name.
@@ -28,4 +33,5 @@
 - Control: single-player cutscene skip uses runtime prototypes table without accessing removed game.*_prototypes.
 - Control: on_init initializes `global` storage even if the environment starts without it.
 - Control: multiplayer join on `on_player_created` initializes `global` before accessing mod state.
+- Control: each player receives the bootstrap starter items once (multiplayer safe).
 - Water duplication: can be disabled via setting; when disabled no water duplication recipe is generated.

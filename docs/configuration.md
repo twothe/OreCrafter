@@ -16,5 +16,4 @@ All settings are startup settings.
 
 ## Fusion Generator
 - `orecrafter_fusiongenerator_craftable` (default false): enable or disable the fusion generator technology/recipe.
-- `orecrafter_fusiongenerator_anywhere` (default false): allow building on any surface when enabled; otherwise Nauvis-only.
-- `orecrafter_fusiongenerator_power` (default 1000): output power in MW.
+- `orecrafter_fusiongenerator_power` (default 1000): output power in kW.

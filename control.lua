@@ -27,9 +27,26 @@ local function BootstrapRecipeName(planet_name)
 	return "orecrafter_bootstrap-"..planet_name
 end
 
+local function BootstrapFluidRecipePrefix(planet_name)
+	return "orecrafter_bootstrap-fluid-"..planet_name.."-"
+end
+
+local function EnablePlanetRecipes(force,planet_name)
+	local suffix="-"..planet_name
+	local fluid_prefix=BootstrapFluidRecipePrefix(planet_name)
+	for name,rec in pairs(force.recipes)do
+		if(not rec.enabled and name:sub(1,10)=="orecrafter")then
+			if(name:sub(-#suffix)==suffix or name:sub(1,#fluid_prefix)==fluid_prefix)then
+				rec.enabled=true
+			end
+		end
+	end
+end
+
 local function EnsureGlobalState()
 	if(not global)then global={} end
 	global.orecrafter_bootstrap_unlocked=global.orecrafter_bootstrap_unlocked or {}
+	global.orecrafter_starters_given=global.orecrafter_starters_given or {}
 end
 
 local function EnsureBootstrapUnlocked(surface,force)
@@ -44,6 +61,7 @@ local function EnsureBootstrapUnlocked(surface,force)
 	if(recipe and not recipe.enabled)then
 		recipe.enabled=true
 	end
+	EnablePlanetRecipes(force,planet_name)
 	force_table[planet_name]=true
 	global.orecrafter_bootstrap_unlocked[force.name]=force_table
 end
@@ -80,7 +98,8 @@ local function StarterInventory(ev)
 	end
 
 	EnsureGlobalState()
-	if(not global.first)then global.first=true else return end
+	if(global.orecrafter_starters_given[p.index])then return end
+	global.orecrafter_starters_given[p.index]=true
 
 	inv.insert{name="assembling-machine-2",count=1}
 	inv.insert{name="assembling-machine-1",count=4}

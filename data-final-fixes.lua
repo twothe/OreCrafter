@@ -147,7 +147,6 @@ orecrafter.planet_resource_map={}
 orecrafter.planet_tile_fluid_map={}
 orecrafter.planet_control_map={}
 orecrafter.plant_outputs={yumako=true,jellynut=true}
-orecrafter.fusiongenerator_anywhere=GetStartupBool("orecrafter_fusiongenerator_anywhere",false)
 orecrafter.allow_water_duplication=GetStartupBool("orecrafter_allow_water_duplication",true)
 orecrafter.settings={
 	item_speed=GetStartupNumber("orecrafter_item_speed"),
@@ -334,22 +333,28 @@ function orecrafter.ApplyPlanetConditions(planets,context)
 end
 
 function orecrafter.RegisterPlanetRecipes(base_recipe,output_key,planets)
-	local conditions=orecrafter.ApplyPlanetConditions(planets,base_recipe.name)
-	if(not conditions)then
+	if(not orecrafter.restrict_planet_resources and (not planets or #planets==0))then
+		local is_bootstrap=base_recipe.name:find("^orecrafter_bootstrap")~=nil
+		orecrafter.AssignPlanetRecipeOrder(base_recipe,output_key,"global",is_bootstrap)
 		orecrafter.RegisterRecipe(base_recipe,output_key)
 		return
 	end
-	if(#conditions==1)then
-		base_recipe.localised_name=orecrafter.PlanetRecipeName(base_recipe,conditions[1].planet)
-		base_recipe.surface_conditions=conditions[1].conditions
-		orecrafter.RegisterRecipe(base_recipe,output_key)
-		return
+	local entries={}
+	if(orecrafter.restrict_planet_resources)then
+		entries=orecrafter.ApplyPlanetConditions(planets,base_recipe.name) or {}
+	else
+		for _,planet_name in ipairs(planets)do
+			table.insert(entries,{planet=planet_name,conditions=nil})
+		end
 	end
-	for _,entry in ipairs(conditions)do
+	for _,entry in ipairs(entries)do
 		local dupe=table.deepcopy(base_recipe)
 		dupe.name=base_recipe.name.."-"..entry.planet
 		dupe.localised_name=orecrafter.PlanetRecipeName(base_recipe,entry.planet)
-		dupe.surface_conditions=entry.conditions
+		if(entry.conditions)then dupe.surface_conditions=entry.conditions end
+		dupe.enabled=false
+		local is_bootstrap=dupe.name:find("^orecrafter_bootstrap")~=nil
+		orecrafter.AssignPlanetRecipeOrder(dupe,output_key,entry.planet,is_bootstrap)
 		orecrafter.RegisterRecipe(dupe,output_key)
 	end
 end
@@ -430,6 +435,68 @@ function orecrafter.PlanetLabel(planet_name)
 	return fallback[planet_name] or planet_name
 end
 
+---Returns a stable ordering index for planets (based on prototype order then name).
+function orecrafter.PlanetOrderIndexMap()
+	if(orecrafter.planet_order_map)then return orecrafter.planet_order_map end
+	local list={}
+	for planet_name,planet in pairs(data.raw.planet or {})do
+		local order=planet and planet.order or planet_name
+		table.insert(list,{name=planet_name,order=tostring(order)})
+	end
+	table.sort(list,function(a,b)
+		if(a.order==b.order)then return a.name<b.name end
+		return a.order<b.order
+	end)
+	local map={}
+	for index,entry in ipairs(list)do
+		map[entry.name]=index
+	end
+	orecrafter.planet_order_map=map
+	return map
+end
+
+function orecrafter.PlanetOrderIndex(planet_name)
+	local map=orecrafter.PlanetOrderIndexMap()
+	return map[planet_name] or 999
+end
+
+function orecrafter.PlanetLinePrefix(planet_name,is_fluid)
+	local index=orecrafter.PlanetOrderIndex(planet_name)
+	local type_key=is_fluid and "b" or "a"
+	return string.format("%03d-%s",index,type_key)
+end
+
+function orecrafter.EnsurePlanetSubgroup(planet_name,is_fluid)
+	local clean_name=planet_name or "global"
+	local subgroup="orecrafter-dupe-planet-"..clean_name..(is_fluid and "-fluids" or "-items")
+	if(data.raw["item-subgroup"][subgroup])then return subgroup end
+	local order
+	if(clean_name=="global")then
+		order=is_fluid and "1" or "0"
+	else
+		order="b"..orecrafter.PlanetLinePrefix(clean_name,is_fluid)
+	end
+	data:extend{{
+		type="item-subgroup",
+		name=subgroup,
+		group="orecrafter-duplications",
+		order=order,
+	}}
+	return subgroup
+end
+
+function orecrafter.AssignPlanetRecipeOrder(recipe,output_key,planet_name,is_bootstrap,name_key_override)
+	local output_type,output_name=output_key and output_key:match("^(.-):(.+)$") or nil,nil
+	local is_fluid=(output_type=="fluid")
+	local subgroup=orecrafter.EnsurePlanetSubgroup(planet_name,is_fluid)
+	local prefix=orecrafter.PlanetLinePrefix(planet_name,is_fluid)
+	local kind=is_bootstrap and "0" or "1"
+	local name_key=name_key_override or output_name or recipe.name
+	name_key=tostring(name_key):lower()
+	recipe.subgroup=subgroup
+	recipe.order=prefix.."-"..name_key.."-"..kind
+end
+
 function orecrafter.PlanetRecipeName(base_recipe,planet_name)
 	local label=orecrafter.PlanetLabel(planet_name)
 	local base_name=base_recipe.localised_name or {"recipe-name."..base_recipe.name}
@@ -472,15 +539,7 @@ function orecrafter.ApplyFusionGeneratorSurfaceConditions()
 	local generators=data.raw["electric-energy-interface"]
 	local fusion=generators and generators["orecrafter-fusiongenerator"]
 	if(not fusion)then return end
-	if(orecrafter.fusiongenerator_anywhere)then
-		fusion.surface_conditions=nil
-		return
-	end
-	local conditions=orecrafter.planet_conditions and orecrafter.planet_conditions.nauvis
-	if(not conditions or #conditions==0)then
-		error("OreCrafter: Nauvis surface conditions not found; cannot restrict fusion generator.")
-	end
-	fusion.surface_conditions=conditions
+	fusion.surface_conditions=nil
 end
 
 orecrafter.ApplyFusionGeneratorSurfaceConditions()
@@ -494,13 +553,27 @@ function orecrafter.RecipeFromResource(e)
 	local rname=primary.name
 	local cat=(primary.type=="fluid" and "basic-fluid" or (e.category or "basic-solid"))
 	local temp=primary.temperature
+	local function IconSizeFromProto(proto)
+		if(proto.icon_size)then return proto.icon_size end
+		if(proto.icons and proto.icons[1] and proto.icons[1].icon_size)then return proto.icons[1].icon_size end
+		return 64
+	end
+	local icon_source=e
+	local localised_name=e.localised_name or {"entity-name."..e.name}
+	if(cat=="basic-fluid")then
+		local fluid=data.raw.fluid[rname]
+		if(fluid)then
+			icon_source=fluid
+			localised_name=fluid.localised_name or {"fluid-name."..rname}
+		end
+	end
 
 	local dupe=orecrafter.MakeRecipeBase(
 		"orecrafter-dupe-"..e.name,
-		e.icons or {{icon=e.icon}},
-		e.icon_size,
+		icon_source.icons or {{icon=icon_source.icon}},
+		IconSizeFromProto(icon_source),
 		(e.order and "a3"..e.order or "a3"),
-		e.localised_name or {"entity-name."..e.name}
+		localised_name
 	)
 
 	if(cat=="basic-fluid")then
@@ -812,24 +885,19 @@ function orecrafter.MakeBootstrapRecipes()
 					r.surface_conditions=conditions
 				end
 			end
+			orecrafter.AssignPlanetRecipeOrder(r,nil,"global",true,r.name)
 
 			for _,output_key in ipairs(SortedKeys(outputs))do
 				local v=orecrafter.recipes[output_key]
 				if(v and v.results and v.results[1])then
-					local g local vname=v.results[1].name
+					local g
+					local vname=v.results[1].name
 					if(v.results[1].type=="item")then
 						g={
 							type="item",
 							name=vname,
 							probability=orecrafterBootstrapChance,
 							amount=math.max(math.ceil(orecrafterBootstrapAmount)*2,1),
-						}
-					elseif(proto.RawItem(vname.."-barrel"))then
-						g={
-							type="item",
-							name=vname .. "-barrel",
-							probability=orecrafterBootstrapChance,
-							amount=math.ceil(orecrafterBootstrapAmount),
 						}
 					end
 					if(g)then table.insert(r.results,g) end
@@ -843,6 +911,67 @@ function orecrafter.MakeBootstrapRecipes()
 	end
 end
 orecrafter.MakeBootstrapRecipes()
+
+--[[ Make the Bootstrap Fluid Recipes ]]--
+function orecrafter.MakeBootstrapFluidRecipes()
+	local output_planet_map=orecrafter.output_planet_map or orecrafter.BuildOutputPlanetMap()
+	local bootstrap_amount=math.max(math.ceil(orecrafter.settings.fluid_count*0.05),1)
+	local bootstrap_time=orecrafter.settings.fluid_speed
+
+	local function IconLayers(proto)
+		if(proto.icons)then return table.deepcopy(proto.icons) end
+		if(proto.icon)then return {{icon=proto.icon,icon_size=proto.icon_size,icon_mipmaps=proto.icon_mipmaps}} end
+		return {}
+	end
+
+	for planet_name in pairs(data.raw.planet or {})do
+		local outputs=orecrafter.OutputsForPlanet(output_planet_map,planet_name)
+		if(next(outputs)~=nil)then
+			for output_key in pairs(outputs)do
+				local output_type,output_name=output_key:match("^(.-):(.+)$")
+				if(output_type=="fluid")then
+					local fluid=data.raw.fluid[output_name]
+					if(fluid)then
+						local recipe_name="orecrafter_bootstrap-fluid-"..planet_name.."-"..output_name
+						if(not data.raw.recipe[recipe_name])then
+							local r={
+								name=recipe_name,
+								type="recipe",
+								icons=IconLayers(fluid),
+								icon_size=fluid.icon_size or (fluid.icons and fluid.icons[1] and fluid.icons[1].icon_size) or 64,
+								order="a1aafluid-"..output_name,
+								category="crafting-with-fluid",
+								subgroup="orecrafter-dupe-bootstrap",
+								energy_required=bootstrap_time,
+								ingredients={},
+								results={},
+								enabled=(planet_name=="nauvis"),
+							}
+							local result={type="fluid",name=output_name,amount=bootstrap_amount}
+							if(fluid.default_temperature)then result.temperature=fluid.default_temperature end
+							r.results={result}
+							if(planet_name~="nauvis")then
+								local label=orecrafter.PlanetLabel(planet_name)
+								r.localised_name={"", {"fluid-name."..output_name}, " ", {"recipe-name.orecrafter_bootstrap"}, " (", label, ")"}
+							else
+								r.localised_name={"", {"fluid-name."..output_name}, " ", {"recipe-name.orecrafter_bootstrap"}}
+							end
+							if(orecrafter.restrict_planet_resources)then
+								local conditions=orecrafter.planet_conditions[planet_name]
+								if(conditions and #conditions>0)then
+									r.surface_conditions=conditions
+								end
+							end
+							orecrafter.AssignPlanetRecipeOrder(r,"fluid:"..output_name,planet_name,true,output_name)
+							data:extend{r}
+						end
+					end
+				end
+			end
+		end
+	end
+end
+orecrafter.MakeBootstrapFluidRecipes()
 
 --[[ Now add the procedurally generated orecrafter.basics recipes to the technology that unlocked it ? ]]--
 

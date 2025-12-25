@@ -21,6 +21,13 @@ This document summarizes how OreCrafter infers which outputs belong to which pla
 - If a control is too broad (like `"trees"`), tighten mapping to per-entity settings to avoid assigning outputs to unrelated planets.
 
 ## References
-- Factorio API: `MapGenSettings` and `AutoplaceSettings` describe map-gen controls, entity settings, and defaulting rules: https://lua-api.factorio.com/latest/Concepts.html#MapGenSettings and https://lua-api.factorio.com/latest/Concepts.html#AutoplaceSettings
-- Factorio API: `AutoplaceControl` describes control keys such as `"trees"` and resource controls: https://lua-api.factorio.com/latest/Concepts.html#AutoplaceControl
-- Factorio API: `PlanetPrototype` documents per-planet `map_gen_settings`: https://lua-api.factorio.com/latest/prototypes/PlanetPrototype.html
+- Factorio API: `MapGenSettings` and `AutoplaceSettings` describe map-gen controls, entity settings, and defaulting rules.
+- Factorio API: `AutoplaceControl` describes control keys such as `"trees"` and resource controls.
+- Factorio API: `PlanetPrototype` documents per-planet `map_gen_settings`.
+
+```
+https://lua-api.factorio.com/latest/Concepts.html#MapGenSettings
+https://lua-api.factorio.com/latest/Concepts.html#AutoplaceSettings
+https://lua-api.factorio.com/latest/Concepts.html#AutoplaceControl
+https://lua-api.factorio.com/latest/prototypes/PlanetPrototype.html
+```

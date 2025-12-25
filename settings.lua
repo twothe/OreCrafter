@@ -38,10 +38,7 @@ data:extend(
 	{type="bool-setting",name="orecrafter_fusiongenerator_craftable",order="24a",
 	setting_type="startup",default_value=false},
 
-	{type="bool-setting",name="orecrafter_fusiongenerator_anywhere",order="24b",
-	setting_type="startup",default_value=false},
-
-	{type="int-setting",name="orecrafter_fusiongenerator_power",order="24c",
+	{type="int-setting",name="orecrafter_fusiongenerator_power",order="24b",
 	setting_type="startup",default_value=1000,
 	minimum_value=100,maximum_value=100000},
 

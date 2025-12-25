@@ -53,7 +53,6 @@ local fusionGenItem = {
   icon_size = 64,
   name = name,
   order = "a1aaa",
-  category = "crafting",
   subgroup = "orecrafter-dupe-bootstrap",
   place_result = name,
   stack_size = 50,

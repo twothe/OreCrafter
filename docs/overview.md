@@ -13,11 +13,12 @@ OreCrafter dynamically creates duplication recipes for resources, fluids, and se
 	- Adds optional `surface_conditions` to duplication recipes so they can only be crafted on planets where the resource naturally occurs.
 	- Appends planet labels to planet-restricted recipe names (for example, “Coal (Nauvis)”).
 	- Optionally removes natural resource entities (ores, rocks, trees, plants) from planet map generation while keeping tile fluids.
-	- Builds planet bootstrap recipes that yield low-probability outputs for resources occurring on each planet and unlock on first arrival.
+	- Builds planet bootstrap recipes that yield low-probability item outputs for resources occurring on each planet and unlock on first arrival.
+	- Builds per-fluid bootstrap recipes (one per planet/fluids) that output a small amount of the fluid with no inputs, crafted in fluid-capable assemblers.
 
 ## Control Stage Flow
 - `control.lua` removes early-game mining drills and furnaces from starter inventory.
-- Grants assembling machines, power poles, and a fusion generator entity for bootstrapping.
+- Grants assembling machines, power poles, and a fusion generator entity for bootstrapping (usable on all surfaces).
 
 ## Shared Library
 - `lib/lib_data.lua` provides `proto` helpers (results, lab packs, autoplace control checks, etc.).
@@ -28,7 +29,7 @@ OreCrafter dynamically creates duplication recipes for resources, fluids, and se
 - Missing planet mappings or surface properties stop loading with a clear error when restrictions are enabled.
 - When planet restriction is enabled, duplication recipes append the planet label to the recipe name (for example, “Coal (Nauvis)”).
 - Optional removal can strip natural resource entities (ores, rocks, trees, plants) from planet map generation while keeping tile fluids.
-- Bootstrap recipes unlock when a player first arrives on the planet.
+- Bootstrap recipes and planet-specific duplication recipes unlock when a player first arrives on the planet (even if restrictions are disabled).
 
 ## Configuration
 See `docs/configuration.md` for the full setting list and defaults.
