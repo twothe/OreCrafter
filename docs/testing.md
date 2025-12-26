@@ -3,3 +3,4 @@
 - Optional: set `LUAC_BIN`, `LUA_BIN`, or `LUAJIT_BIN` to point at custom executables.
 - Full validation still requires loading the mod in Factorio, since data/control stages depend on the game runtime.
 - Multiplayer smoke test: have a new player join to validate `on_player_created` initialization logic.
+- Mine-entity research triggers are converted to craft-item triggers using the most planet-restricted minable item output (entity planet map fallback, then highest tech depth).

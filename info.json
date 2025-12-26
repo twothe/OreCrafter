@@ -1,6 +1,6 @@
 {
 	"name": "orecrafter",
-	"version": "2.0.0",
+	"version": "2.0.2",
 	"title": "OreCrafter",
 	"author": "TwoThe",
 	"dependencies": ["base >= 2.0"],

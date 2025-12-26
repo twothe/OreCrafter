@@ -973,6 +973,86 @@ function orecrafter.MakeBootstrapFluidRecipes()
 end
 orecrafter.MakeBootstrapFluidRecipes()
 
+--- Resolves a minable entity prototype by name across known entity pools.
+function orecrafter.ResolveMinableEntity(entity_name)
+	if(not entity_name)then return nil end
+	for _,pool in pairs({data.raw.resource,data.raw.tree,data.raw.plant,data.raw["simple-entity"],data.raw["simple-entity-with-owner"]})do
+		local entity=pool and pool[entity_name]
+		if(entity)then return entity end
+	end
+	return nil
+end
+
+--- Collects unique item outputs from a minable entity definition.
+function orecrafter.CollectMinableItemResults(entity)
+	if(not entity or not entity.minable)then return nil end
+	local results=proto.Results(entity.minable)
+	if(not results)then return nil end
+	local list={}
+	local seen={}
+	for _,rx in pairs(results)do
+		local result=proto.Result(rx)
+		if(result and result.name and (result.type==nil or result.type=="item"))then
+			if(not seen[result.name])then
+				seen[result.name]=true
+				table.insert(list,{type="item",name=result.name})
+			end
+		end
+	end
+	return (#list>0 and list or nil)
+end
+
+--- Orders minable outputs by planet restriction (fewest planets) then tech depth (highest first).
+function orecrafter.OrderMineTriggerOutputs(results,entity_planets)
+	local ranked={}
+	for _,result in ipairs(results or {})do
+		local output_key=orecrafter.OutputKey(result)
+		local planet_map=orecrafter.output_planet_map and orecrafter.output_planet_map[output_key]
+		local planet_count
+		if(planet_map)then
+			planet_count=table_size(planet_map)
+		elseif(entity_planets)then
+			planet_count=table_size(entity_planets)
+		else
+			planet_count=999999
+		end
+		table.insert(ranked,{result=result,depth=orecrafter.OutputTechDepth(result),planet_count=planet_count})
+	end
+	table.sort(ranked,function(a,b)
+		if(a.planet_count~=b.planet_count)then return a.planet_count<b.planet_count end
+		if(a.depth==b.depth)then return a.result.name<b.result.name end
+		return a.depth>b.depth
+	end)
+	return ranked
+end
+
+--- Converts mine-entity research triggers to craft-item triggers using minable outputs.
+function orecrafter.ConvertMineEntityTriggers()
+	for tech_name,tech in pairs(data.raw.technology or {})do
+		local trigger=tech.research_trigger
+		if(trigger and trigger.type=="mine-entity" and trigger.entity)then
+			local entity=orecrafter.ResolveMinableEntity(trigger.entity)
+			if(not entity)then
+				log("OreCrafter: mine-entity trigger for '"..tech_name.."' references unknown entity '"..trigger.entity.."'. Leaving unchanged.")
+			else
+				local results=orecrafter.CollectMinableItemResults(entity)
+				if(not results)then
+					log("OreCrafter: mine-entity trigger for '"..tech_name.."' has no item outputs on '"..trigger.entity.."'. Leaving unchanged.")
+				else
+					local entity_planets=orecrafter.planet_entity_map and orecrafter.planet_entity_map[entity.name]
+					local ranked=orecrafter.OrderMineTriggerOutputs(results,entity_planets)
+					local primary=ranked[1] and ranked[1].result
+					if(primary and primary.name)then
+						tech.research_trigger={type="craft-item",item=primary.name,count=1}
+					end
+				end
+			end
+		end
+	end
+end
+
+orecrafter.ConvertMineEntityTriggers()
+
 --[[ Now add the procedurally generated orecrafter.basics recipes to the technology that unlocked it ? ]]--
 
 orecrafter.starters={} -- the starting recipes that can be mined by hand (iron-ore)

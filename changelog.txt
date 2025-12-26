@@ -1,4 +1,11 @@
 ---------------------------------------------------------------------------------------------------
+Version: 2.0.2
+Date: 26.12.2025
+  Changes:
+    - Convert mine-entity research triggers into craft-item triggers using the most planet-restricted outputs
+    - Keep fluid-only mine triggers unchanged
+
+---------------------------------------------------------------------------------------------------
 Version: 2.0.0
 Date: 23.12.2025
   Changes:

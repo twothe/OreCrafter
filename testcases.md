@@ -22,6 +22,7 @@
 - Space Age: rock-like entities without planet map generation entries (e.g., enemy shells) are ignored to avoid invalid planet mapping errors.
 - Space Age: tree entities with planet map generation entries generate duplication recipes (for example, Vulcanus ashland lichen trees yield carbon).
 - Space Age: Gleba fruits (yumako, jellynut) have duplication recipes in the organic category and are only craftable in biochambers.
+- Tech triggers: mine-entity research triggers are replaced with craft-item triggers based on the most planet-restricted minable item output (entity planet map fallback, then highest tech depth).
 - Worldgen: when natural source removal is enabled, resource entities, rock entities, trees, and plant sources (yumako/jellystem) no longer generate on planets, while tile fluids (water/lava/heavy oil) still do.
 - Space Age: when planet restriction is enabled and a resource/plant/fluid lacks planet mapping or surface properties, the mod errors with a clear message.
 - Fusion generator: default buildable only on Nauvis; when the “any surface” option is enabled it can be placed on all surfaces (including space platforms).

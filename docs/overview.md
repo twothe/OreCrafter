@@ -15,6 +15,7 @@ OreCrafter dynamically creates duplication recipes for resources, fluids, and se
 	- Optionally removes natural resource entities (ores, rocks, trees, plants) from planet map generation while keeping tile fluids.
 	- Builds planet bootstrap recipes that yield low-probability item outputs for resources occurring on each planet and unlock on first arrival.
 	- Builds per-fluid bootstrap recipes (one per planet/fluids) that output a small amount of the fluid with no inputs, crafted in fluid-capable assemblers.
+	- Converts `mine-entity` research triggers into `craft-item` triggers using the most planet-restricted minable item output (entity planet map fallback, then highest tech depth).
 
 ## Control Stage Flow
 - `control.lua` removes early-game mining drills and furnaces from starter inventory.
